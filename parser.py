@@ -53,14 +53,20 @@ def get_pairs_by_day(group, nd, day_number):
     rasp_day = {}
 
     day_name, date = rasp[day_number][0].find_all('td')[:2]
+
     rasp_day['info'] = {
                         'group': group,
                         'week': nd,
-                        'day_name': day_name.text.strip(), 
-                        'date': date.text.strip()
                         }
 
-    rasp_day['pairs'] = {}
+    rasp_day[f'day_{day_number}'] = {}
+    
+    rasp_day[f'day_{day_number}']['info'] = {
+                                            'day_name': day_name.text.strip(), 
+                                            'date': date.text.strip()
+                                            }
+
+    rasp_day[f'day_{day_number}']['pairs'] = {}
 
     headers = ('Время занятия', 'Дисциплина', 'Подгр.', 'Преподаватель', 'Аудитория')
     
@@ -68,13 +74,13 @@ def get_pairs_by_day(group, nd, day_number):
         html_by_day = rasp[day_number][pair]
         columns = html_by_day.find_all('td')[-5:]
         
-        rasp_day['pairs'][f'pair_{pair+1}'] = dict(zip(headers, columns))
+        rasp_day[f'day_{day_number}']['pairs'][f'pair_{pair+1}'] = dict(zip(headers, columns))
 
     return rasp_day
 
 def parse_pairs_by_day(group, nd, day_number):
     rasp_day = get_pairs_by_day(group, nd, day_number)
-    pairs = rasp_day.get('pairs')
+    pairs = rasp_day.get(f'day_{day_number}').get('pairs')
     
     for pair in pairs.values():
         for key, value in pair.items():
