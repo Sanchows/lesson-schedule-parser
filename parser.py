@@ -1,6 +1,8 @@
 from bs4 import BeautifulSoup
 import requests
+from datetime import datetime
 import sys
+from schdl import get_weeks
 
 def get_rasp_by_group(group, nd):
     url = "http://rasp.barsu.by/stud.php"
@@ -139,3 +141,30 @@ def get_schedule(group, nd, day_numbers):
         txt_msg += "🕺 Занятий нет! 🕺"
 
     return txt_msg
+
+def get_current_week():
+    now = datetime.strftime(datetime.now(), '%Y-%m-%d')
+
+    weeks = get_weeks()
+
+    next_week = None
+    current_week = None
+
+    result = []
+    now_str = ''.join(now.split('-'))
+    
+    if int(now_str) >= int(''.join(weeks[-1].split('-'))):
+        return [weeks[-1], None]
+
+    for week in weeks:
+        week_str = ''.join(week.split('-'))
+        if (int(week_str) <= int(now_str)):
+            current_week = week[:]
+            # continue
+        else:
+            result.append(current_week)
+            next_week = week[:]
+            result.append(next_week)
+            break
+
+    return result
