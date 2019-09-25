@@ -107,8 +107,8 @@ def get_schedule(group, nd, day_numbers):
 
     for day in pairs.values():
         
-        txt_msg += f"\n📌 {day['info']['day_name']} {day['info']['date']} 📌\n≋ᴮ≋≋≋≋≋ᴬ≋≋≋≋≋ᴿ≋≋≋≋≋ᴳ≋≋≋≋≋ᵁ≋\n"
-
+        top = f"\n📌 {day['info']['day_name']} {day['info']['date']} 📌\n≋ᴮ≋≋≋≋≋ᴬ≋≋≋≋≋ᴿ≋≋≋≋≋ᴳ≋≋≋≋≋ᵁ≋\n"
+        txt_msg += top
         day.__delitem__('info')
 
         for data_pair in day.values():
@@ -135,5 +135,7 @@ def get_schedule(group, nd, day_numbers):
                         
                     txt_msg += '\n'
                 txt_msg += '∴∵∴∵∴∵∴∵∴∵∴∵∴∵∴∵∴∵∴∵∴∵∴∵∴∵\n'
-    
+    if txt_msg == top:
+        txt_msg += "🕺 Занятий нет! 🕺"
+
     return txt_msg
