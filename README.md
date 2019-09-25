@@ -11,7 +11,7 @@ $ pip3 install bs4
 $ pip3 install lxml
 ```
 ### Examples:
-```python
+```python3
 from schdl import *
 from parser import *
 import json
@@ -55,7 +55,6 @@ for day in pairs.values():
                         print('', end = '')
                 print()
             print('********')
-```
 ```
 ### Examples 3:
 ``` python3
