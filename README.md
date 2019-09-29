@@ -59,8 +59,13 @@ for day in pairs.values():
 ### Examples 3:
 ``` python3
 from parser import *
+from schdl import *
 
-schd = get_schedule('ИСТ41', nd = '2019-09-23', day_numbers = (0,1,2,))
+ft = get_facultets()[0] # Инженерный факультет
+spec = get_specs(ft)[0] # Агрономия
+group = get_groups(spec)[0] # Ас11
+week = get_weeks()[2] # 2019-09-16
 
-print(schd)
+for day in get_schedule(group, nd = week, day_numbers = (0,1,2,)):
+    print(day)
 ```
