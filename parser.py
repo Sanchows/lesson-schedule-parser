@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta
 import sys
 from schdl import get_weeks
 
@@ -83,6 +83,7 @@ def get_pairs_by_day(group, nd, day_numbers):
 
 
 def parse_pairs_by_day(group, nd, day_numbers):
+    
     rasp_day = get_pairs_by_day(group, nd, day_numbers)
 
     for day_number in day_numbers:
@@ -97,11 +98,11 @@ def parse_pairs_by_day(group, nd, day_numbers):
     return rasp_day
 
 def get_schedule(group, nd, day_numbers):
-
-    symbol_numbers = ('①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧')
-    symbol_numbers_v2 = ('❶', '❷', '❸', '❹', '❺', '❻', '❼', '❽')
-
-    txt_msg = ""
+    """Возвращает строку с расписанием на конкретные дни"""
+    # ('❶', '❷', '❸', '❹', '❺', '❻', '❼', '❽')
+    # ('①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧')
+    # ('1⃣', '2⃣', '3⃣', '4⃣', '5⃣', '6⃣', '7⃣', '8⃣', '9⃣')
+    symbol_numbers = ('1⃣', '2⃣', '3⃣', '4⃣', '5⃣', '6⃣', '7⃣', '8⃣', '9⃣')
 
     pairs = parse_pairs_by_day(group, nd, day_numbers)
                     
@@ -110,7 +111,7 @@ def get_schedule(group, nd, day_numbers):
     for day in pairs.values():
         
         top = f"\n📌 {day['info']['day_name']} {day['info']['date']} 📌\n≋ᴮ≋≋≋≋≋ᴬ≋≋≋≋≋ᴿ≋≋≋≋≋ᴳ≋≋≋≋≋ᵁ≋\n"
-        txt_msg += top
+        txt_msg = top[:]
         day.__delitem__('info')
 
         for data_pair in day.values():
@@ -119,11 +120,10 @@ def get_schedule(group, nd, day_numbers):
                 count_pair = len(data['Дисциплина'])
                 if count_pair < 1:
                     continue
-                txt_msg += f'{symbol_numbers[num]} ПАРА ►'
+                txt_msg += f'{symbol_numbers[num]} ►'
                 txt_msg += ''.join(data['Время занятия'])
                 txt_msg += '◄\n'
                 data.__delitem__('Время занятия')
-
                 for i in range(count_pair):
                     for num, text in enumerate(data.values()):
                         try:
@@ -136,13 +136,15 @@ def get_schedule(group, nd, day_numbers):
                         txt_msg += '\n~~~'
                         
                     txt_msg += '\n'
-                txt_msg += '∴∵∴∵∴∵∴∵∴∵∴∵∴∵∴∵∴∵∴∵∴∵∴∵∴∵\n'
-    if txt_msg == top:
-        txt_msg += "🕺 Занятий нет! 🕺"
+                txt_msg += '\n' # ∴∵∴∵∴∵∴∵∴∵∴∵∴∵∴∵∴∵∴∵∴∵∴∵∴∵
+        if txt_msg == top:
+            txt_msg += "🕺 Занятий нет! 🕺"
 
-    return txt_msg
+        yield txt_msg
 
-def get_current_week():
+def get_current_and_next_week():
+    """Возвращает список с 2 элементами: расписание на текущую и следующую неделю"""
+
     now = datetime.strftime(datetime.now(), '%Y-%m-%d')
 
     weeks = get_weeks()
@@ -168,3 +170,11 @@ def get_current_week():
             break
 
     return result
+
+def get_current_and_next_day():
+    '''Возвращает список из номера текущего дня и следующего.'''
+    datetime_now = datetime.now()
+    weekday_current = datetime.weekday(datetime_now)
+    weekday_next = datetime.weekday(datetime_now + timedelta(days = 1))
+
+    return [weekday_current, weekday_next]
