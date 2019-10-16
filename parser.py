@@ -93,7 +93,11 @@ def parse_pairs_by_day(group, nd, day_numbers):
             for key, value in pair.items():
                 tmp_value = str(value).split('<br/>')
                 tmp_value = list(map(lambda x: x.replace('<td>', '').replace('</td>', '').strip(), tmp_value))
-                pair[key] = list(filter(None, tmp_value))
+                
+                if key != 'Подгр.':
+                    pair[key] = list(filter(None, tmp_value))
+                else:
+                    pair[key] = tmp_value
 
     return rasp_day
 
@@ -126,12 +130,9 @@ def get_schedule(group, nd, day_numbers):
                 data.__delitem__('Время занятия')
                 for i in range(count_pair):
                     for num, text in enumerate(data.values()):
-                        try:
-                            txt_msg += text[i]
-                            if num < 3:
-                                txt_msg += ' ∘ '
-                        except IndexError:
-                            pass
+                        if text[i]:
+                            txt_msg += text[i] + ' ∘ '
+                        
                     if count_pair > 1 and count_pair-i != 1:
                         txt_msg += '\n~~~'
                         
@@ -146,6 +147,10 @@ def get_current_and_next_week():
     """Возвращает список с 2 элементами: расписание на текущую и следующую неделю"""
 
     now = datetime.strftime(datetime.now(), '%Y-%m-%d')
+
+    current_day, next_day = get_current_and_next_day()
+    if current_day == 6:
+        now = datetime.strftime(datetime.now() + timedelta(days = 1), '%Y-%m-%d')
 
     weeks = get_weeks()
 
@@ -173,6 +178,7 @@ def get_current_and_next_week():
 
 def get_current_and_next_day():
     '''Возвращает список из номера текущего дня и следующего.'''
+    
     datetime_now = datetime.now()
     weekday_current = datetime.weekday(datetime_now)
     weekday_next = datetime.weekday(datetime_now + timedelta(days = 1))
