@@ -53,6 +53,8 @@ def get_pairs_by_day(group, nd, day_numbers):
     rasp_html = get_rasp_by_group(group, nd)
     rasp = get_week_rasp(rasp_html)
 
+    day_names = ('ПОНЕДЕЛЬНИК', 'ВТОРНИК', 'СРЕДА', 'ЧЕТВЕРГ', 'ПЯТНИЦА', 'СУББОТА')
+
     rasp_day = {}
 
     rasp_day['info'] = {
@@ -65,17 +67,18 @@ def get_pairs_by_day(group, nd, day_numbers):
         rasp_day[f'day_{day_number}'] = {}
         
         rasp_day[f'day_{day_number}']['info'] = {
-                                                'day_name': day_name.text.strip(), 
+                                                'day_name': day_names[day_number], 
                                                 'date': date.text.strip()
                                                 }
 
         rasp_day[f'day_{day_number}']['pairs'] = {}
 
-        headers = ('Время занятия', 'Дисциплина', 'Подгр.', 'Преподаватель', 'Аудитория')
+        headers = ('Подгр.', 'Время занятия', 'Дисциплина', 'Преподаватель', 'Аудитория')
         
         for pair in range(0, 8):
             html_by_day = rasp[day_number][pair]
             columns = html_by_day.find_all('td')[-5:]
+            columns.insert(0, columns.pop(2))
             
             rasp_day[f'day_{day_number}']['pairs'][f'pair_{pair+1}'] = dict(zip(headers, columns))
 
@@ -114,7 +117,7 @@ def get_schedule(group, nd, day_numbers):
 
     for day in pairs.values():
         
-        top = f"\n📌 {day['info']['day_name']} {day['info']['date']} 📌\n≋ᴮ≋≋≋≋≋ᴬ≋≋≋≋≋ᴿ≋≋≋≋≋ᴳ≋≋≋≋≋ᵁ≋\n"
+        top = f"\n📌 {day['info']['day_name']} {day['info']['date']} 📌\n≋ƃ≋≋≋≋≋α≋≋≋≋≋ρ≋≋≋≋≋Г≋≋≋≋≋Ꮍ≋\n"
         txt_msg = top[:]
         day.__delitem__('info')
 
@@ -129,9 +132,16 @@ def get_schedule(group, nd, day_numbers):
                 txt_msg += '◄\n'
                 data.__delitem__('Время занятия')
                 for i in range(count_pair):
-                    for num, text in enumerate(data.values()):
-                        if text[i]:
-                            txt_msg += text[i] + ' ∘ '
+                    for num, (key, text) in enumerate(data.items()):
+                        try:
+                            if text[i]:
+                                txt_msg += text[i]
+                                if key == 'Подгр.':
+                                    txt_msg += ' подгр. - '
+                                else:
+                                    txt_msg += ' ∘ '
+                        except IndexError:
+                            pass
                         
                     if count_pair > 1 and count_pair-i != 1:
                         txt_msg += '\n~~~'
