@@ -156,11 +156,11 @@ def get_schedule(group, nd, day_numbers):
 def get_current_and_next_week():
     """Возвращает список с 2 элементами: расписание на текущую и следующую неделю"""
 
-    now = datetime.strftime(datetime.now(), '%Y-%m-%d')
+    now = datetime.strftime(datetime.utcnow() + timedelta(hours=3), '%Y-%m-%d')
 
     current_day, next_day = get_current_and_next_day()
     if current_day == 6:
-        now = datetime.strftime(datetime.now() + timedelta(days = 1), '%Y-%m-%d')
+        now = datetime.strftime(datetime.utcnow() + timedelta(hours=3) + timedelta(days = 1), '%Y-%m-%d')
 
     weeks = get_weeks()
 
@@ -189,7 +189,7 @@ def get_current_and_next_week():
 def get_current_and_next_day():
     '''Возвращает список из номера текущего дня и следующего.'''
     
-    datetime_now = datetime.now()
+    datetime_now = datetime.utcnow() + timedelta(hours=3)
     weekday_current = datetime.weekday(datetime_now)
     weekday_next = datetime.weekday(datetime_now + timedelta(days = 1))
 
