@@ -1,7 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
 from datetime import datetime, timedelta
-import sys
 from schdl import get_weeks
 
 def get_rasp_by_group(group, nd):
@@ -117,7 +116,7 @@ def get_schedule(group, nd, day_numbers):
 
     for day in pairs.values():
         
-        top = f"\n📌 {day['info']['day_name']} {day['info']['date']} 📌\n≋ƃ≋≋≋≋≋α≋≋≋≋≋ρ≋≋≋≋≋Г≋≋≋≋≋Ꮍ≋\n"
+        top = f"📌 {day['info']['day_name']} {day['info']['date']} 📌\n≋ƃ≋≋≋≋≋α≋≋≋≋≋ρ≋≋≋≋≋Г≋≋≋≋≋Ꮍ≋\n"
         txt_msg = top[:]
         day.__delitem__('info')
 
@@ -149,18 +148,18 @@ def get_schedule(group, nd, day_numbers):
                     txt_msg += '\n'
                 txt_msg += '\n' # ∴∵∴∵∴∵∴∵∴∵∴∵∴∵∴∵∴∵∴∵∴∵∴∵∴∵
         if txt_msg == top:
-            txt_msg += "🕺 Занятий нет! 🕺"
+            txt_msg += "🕺 Занятий нет! 🕺\n\n"
 
         yield txt_msg
 
 def get_current_and_next_week():
     """Возвращает список с 2 элементами: расписание на текущую и следующую неделю"""
 
-    now = datetime.strftime(datetime.utcnow() + timedelta(hours=3), '%Y-%m-%d')
+    now = datetime.strftime(datetime.now(), '%Y-%m-%d')
 
     current_day, next_day = get_current_and_next_day()
     if current_day == 6:
-        now = datetime.strftime(datetime.utcnow() + timedelta(hours=3) + timedelta(days = 1), '%Y-%m-%d')
+        now = datetime.strftime(datetime.now() + timedelta(days = 1), '%Y-%m-%d')
 
     weeks = get_weeks()
 
@@ -189,7 +188,7 @@ def get_current_and_next_week():
 def get_current_and_next_day():
     '''Возвращает список из номера текущего дня и следующего.'''
     
-    datetime_now = datetime.utcnow() + timedelta(hours=3)
+    datetime_now = datetime.now()
     weekday_current = datetime.weekday(datetime_now)
     weekday_next = datetime.weekday(datetime_now + timedelta(days = 1))
 
